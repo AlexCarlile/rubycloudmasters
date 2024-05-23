@@ -6,6 +6,7 @@ import NominationDropdown from './formComponents/NominationDropdown';
 import SubmitButton from './formComponents/SubmitButton';
 import Checkbox from './formComponents/Checkbox';
 import axios from 'axios'; // Подключаем axios для отправки POST запросов
+import ReCAPTCHA from 'react-google-recaptcha';
 
 
 export default function Form() {
@@ -22,6 +23,8 @@ export default function Form() {
     const [filledCheck, setFilledCheck] = useState(true)
     const [success, setSuccess] = useState(false)
 
+    const [captchaToken, setCaptchaToken] = useState(null);
+
     const checkFields = () => {
         if (
             companyName.trim() !== '' &&
@@ -30,7 +33,8 @@ export default function Form() {
             email.trim() !== '' &&
             selectedNomination.trim() !== '' &&
             projectDescription.trim() !== '' &&
-            isCheckboxChecked !== false
+            isCheckboxChecked !== false &&
+            captchaToken !== null
         ) {
             setIsFilled(true);
         } else {
@@ -40,9 +44,7 @@ export default function Form() {
 
     useEffect(() => {
         checkFields();
-    }, [companyName, contactPerson, phone, email, selectedNomination, projectDescription, isCheckboxChecked]);
-
-
+    }, [companyName, contactPerson, phone, email, selectedNomination, projectDescription, isCheckboxChecked, captchaToken]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -66,6 +68,7 @@ export default function Form() {
                         selectedNomination,
                         projectDescription,
                         isCheckboxChecked,
+                        recaptchaResponse: captchaToken // Добавляем токен reCAPTCHA в данные формы
                     }
                 });
         
@@ -87,6 +90,8 @@ export default function Form() {
 
             setIsFilled(true)
             setFilledCheck(true)
+
+            setCaptchaToken(null)
         }
     };
   
@@ -137,11 +142,20 @@ export default function Form() {
                         filledCheck={filledCheck}
                         success={success}
                     />
+                    <div style={{display: 'flex', width: '100%', justifyContent:'end', paddingTop: '20px'}}>
+                        <ReCAPTCHA 
+                            sitekey="6Lf02-QpAAAAABgxIuQ_mJjjYk5dygUUKCObwEnt"
+                            onChange={(val) => setCaptchaToken(val)}
+                            theme="dark"
+                        />
+                    </div>
+
                     <Checkbox 
                         filledCheck={filledCheck}
                         checked={isCheckboxChecked} 
                         onChange={setIsCheckboxChecked}
                     />
+
                 </form>
             </div>
         </div>
