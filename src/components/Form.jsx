@@ -7,6 +7,7 @@ import SubmitButton from './formComponents/SubmitButton';
 import Checkbox from './formComponents/Checkbox';
 import axios from 'axios'; // Подключаем axios для отправки POST запросов
 import ReCAPTCHA from 'react-google-recaptcha';
+import { SmartCaptcha } from '@yandex/smart-captcha';
 
 
 export default function Form() {
@@ -23,7 +24,7 @@ export default function Form() {
     const [filledCheck, setFilledCheck] = useState(true)
     const [success, setSuccess] = useState(false)
 
-    const [captchaToken, setCaptchaToken] = useState(null);
+    const [captchaToken, setCaptchaToken] = useState('');
 
     const checkFields = () => {
         if (
@@ -34,7 +35,7 @@ export default function Form() {
             selectedNomination.trim() !== '' &&
             projectDescription.trim() !== '' &&
             isCheckboxChecked !== false &&
-            captchaToken !== null
+            captchaToken !== ''
         ) {
             setIsFilled(true);
         } else {
@@ -68,7 +69,7 @@ export default function Form() {
                         selectedNomination,
                         projectDescription,
                         isCheckboxChecked,
-                        recaptchaResponse: captchaToken // Добавляем токен reCAPTCHA в данные формы
+                        captchaToken
                     }
                 });
         
@@ -91,7 +92,7 @@ export default function Form() {
             setIsFilled(true)
             setFilledCheck(true)
 
-            setCaptchaToken(null)
+            setCaptchaToken('')
         }
     };
   
@@ -142,11 +143,19 @@ export default function Form() {
                         filledCheck={filledCheck}
                         success={success}
                     />
-                    <div style={{display: 'flex', width: '100%', justifyContent:'end', paddingTop: '20px'}}>
+
+                    {/* <div style={{display: 'flex', width: '100%', justifyContent:'end', paddingTop: '20px'}}>
                         <ReCAPTCHA 
                             sitekey="6Lf02-QpAAAAABgxIuQ_mJjjYk5dygUUKCObwEnt"
                             onChange={(val) => setCaptchaToken(val)}
                             theme="dark"
+                        />
+                    </div> */}
+
+                    <div  style={{display: 'flex', width: '100%', justifyContent:'end', paddingTop: '20px'}}>
+                        <SmartCaptcha 
+                            sitekey="ysc1_IQz6bVgqCuJvOWCPgcrsx22F8cp17k6XwaeCcNJc0edbdd49" 
+                            onSuccess={(token) => setCaptchaToken(token)}
                         />
                     </div>
 
@@ -155,7 +164,6 @@ export default function Form() {
                         checked={isCheckboxChecked} 
                         onChange={setIsCheckboxChecked}
                     />
-
                 </form>
             </div>
         </div>
